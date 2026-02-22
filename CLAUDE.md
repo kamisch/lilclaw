@@ -1,4 +1,4 @@
-# NanoClaw
+# LilClaw
 
 Personal Claude assistant. See [README.md](README.md) for philosophy and setup. See [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) for architecture decisions.
 
@@ -42,14 +42,14 @@ npm run build        # Compile TypeScript
 Service management:
 ```bash
 # macOS (launchd)
-launchctl load ~/Library/LaunchAgents/com.nanoclaw.plist
-launchctl unload ~/Library/LaunchAgents/com.nanoclaw.plist
-launchctl kickstart -k gui/$(id -u)/com.nanoclaw  # restart
+launchctl load ~/Library/LaunchAgents/com.lilclaw.plist
+launchctl unload ~/Library/LaunchAgents/com.lilclaw.plist
+launchctl kickstart -k gui/$(id -u)/com.lilclaw  # restart
 
 # Linux (systemd)
-systemctl --user start nanoclaw
-systemctl --user stop nanoclaw
-systemctl --user restart nanoclaw
+systemctl --user start lilclaw
+systemctl --user stop lilclaw
+systemctl --user restart lilclaw
 ```
 
 ## Container Build Cache

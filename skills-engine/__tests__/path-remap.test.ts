@@ -5,7 +5,7 @@ import {
   cleanup,
   createMinimalState,
   createTempDir,
-  setupNanoclawDir,
+  setupLilclawDir,
 } from './test-helpers.js';
 
 describe('path-remap', () => {
@@ -14,7 +14,7 @@ describe('path-remap', () => {
 
   beforeEach(() => {
     tmpDir = createTempDir();
-    setupNanoclawDir(tmpDir);
+    setupLilclawDir(tmpDir);
     createMinimalState(tmpDir);
     process.chdir(tmpDir);
   });
