@@ -9,7 +9,7 @@ import Database from 'better-sqlite3';
 
 import { STORE_DIR } from '../src/config.js';
 import { logger } from '../src/logger.js';
-import { commandExists, getPlatform, isHeadless, isWSL } from './platform.js';
+import { commandExists, getPlatform, isHeadless } from './platform.js';
 import { emitStatus } from './status.js';
 
 export async function run(_args: string[]): Promise<void> {
@@ -18,7 +18,6 @@ export async function run(_args: string[]): Promise<void> {
   logger.info('Starting environment check');
 
   const platform = getPlatform();
-  const wsl = isWSL();
   const headless = isHeadless();
 
   // Check Apple Container
@@ -68,12 +67,11 @@ export async function run(_args: string[]): Promise<void> {
     }
   }
 
-  logger.info({ platform, wsl, appleContainer, docker, hasEnv, hasAuth, hasRegisteredGroups },
+  logger.info({ platform, appleContainer, docker, hasEnv, hasAuth, hasRegisteredGroups },
     'Environment check complete');
 
   emitStatus('CHECK_ENVIRONMENT', {
     PLATFORM: platform,
-    IS_WSL: wsl,
     IS_HEADLESS: headless,
     APPLE_CONTAINER: appleContainer,
     DOCKER: docker,

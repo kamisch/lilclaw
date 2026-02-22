@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 
 import {
   getPlatform,
-  isWSL,
   isRoot,
   isHeadless,
   hasSystemd,
@@ -20,22 +19,6 @@ describe('getPlatform', () => {
     expect(['macos', 'linux', 'unknown']).toContain(result);
   });
 
-});
-
-// --- isWSL ---
-
-describe('isWSL', () => {
-  it('returns a boolean', () => {
-    expect(typeof isWSL()).toBe('boolean');
-  });
-
-  it('checks /proc/version for WSL markers', () => {
-    // On non-WSL Linux, should return false
-    // On WSL, should return true
-    // Just verify it doesn't throw
-    const result = isWSL();
-    expect(typeof result).toBe('boolean');
-  });
 });
 
 // --- isRoot ---

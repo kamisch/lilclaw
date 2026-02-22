@@ -21,7 +21,7 @@ Run `bash setup.sh` and parse the status block.
   - After installing Node, re-run `bash setup.sh`
 - If DEPS_OK=false → Read `logs/setup.log`. Try: delete `node_modules` and `package-lock.json`, re-run `bash setup.sh`. If native module build fails, install build tools (`xcode-select --install` on macOS, `build-essential` on Linux), then retry.
 - If NATIVE_OK=false → better-sqlite3 failed to load. Install build tools and re-run.
-- Record PLATFORM and IS_WSL for later steps.
+- Record PLATFORM for later steps.
 
 ## 2. Check Environment
 
@@ -29,7 +29,7 @@ Run `npx tsx setup/index.ts --step environment` and parse the status block.
 
 - If HAS_AUTH=true → note that WhatsApp auth exists, offer to skip step 5
 - If HAS_REGISTERED_GROUPS=true → note existing config, offer to skip or reconfigure
-- Record APPLE_CONTAINER and DOCKER values for step 3
+- Record DOCKER value for step 3
 
 ## 3. Container Runtime
 
@@ -89,8 +89,8 @@ If HAS_AUTH=true, confirm: keep or re-authenticate?
 
 **Choose auth method based on environment (from step 2):**
 
-If IS_HEADLESS=true AND IS_WSL=false → AskUserQuestion: Pairing code (recommended) vs QR code in terminal?
-Otherwise (macOS, desktop Linux, or WSL) → AskUserQuestion: QR code in browser (recommended) vs pairing code vs QR code in terminal?
+If IS_HEADLESS=true → AskUserQuestion: Pairing code (recommended) vs QR code in terminal?
+Otherwise → AskUserQuestion: QR code in browser (recommended) vs pairing code vs QR code in terminal?
 
 - **QR browser:** `npx tsx setup/index.ts --step whatsapp-auth -- --method qr-browser` (Bash timeout: 150000ms)
 - **Pairing code:** Ask for phone number first. `npx tsx setup/index.ts --step whatsapp-auth -- --method pairing-code --phone NUMBER` (Bash timeout: 150000ms). Display PAIRING_CODE.
@@ -137,7 +137,7 @@ If service already running: unload first.
 
 Run `npx tsx setup/index.ts --step service` and parse the status block.
 
-**If FALLBACK=wsl_no_systemd:** WSL without systemd detected. Tell user they can either enable systemd in WSL (`echo -e "[boot]\nsystemd=true" | sudo tee /etc/wsl.conf` then restart WSL) or use the generated `start-lilclaw.sh` wrapper.
+**If FALLBACK=no_systemd:** systemd not detected. Tell user they can use the generated `start-lilclaw.sh` wrapper to run LilClaw.
 
 **If DOCKER_GROUP_STALE=true:** The user was added to the docker group after their session started — the systemd service can't reach the Docker socket. Ask user to run these two commands:
 
@@ -164,7 +164,7 @@ Replace `USERNAME` with the actual username (from `whoami`). Run the two `sudo` 
 Run `npx tsx setup/index.ts --step verify` and parse the status block.
 
 **If STATUS=failed, fix each:**
-- SERVICE=stopped → `npm run build`, then restart: `launchctl kickstart -k gui/$(id -u)/com.lilclaw` (macOS) or `systemctl --user restart lilclaw` (Linux) or `bash start-lilclaw.sh` (WSL nohup)
+- SERVICE=stopped → `npm run build`, then restart: `launchctl kickstart -k gui/$(id -u)/com.lilclaw` (macOS) or `systemctl --user restart lilclaw` (Linux) or `bash start-lilclaw.sh` (nohup fallback)
 - SERVICE=not_found → re-run step 10
 - CREDENTIALS=missing → re-run step 4
 - WHATSAPP_AUTH=not_found → re-run step 5
@@ -181,6 +181,6 @@ Tell user to test: send a message in their registered chat. Show: `tail -f logs/
 
 **No response to messages:** Check trigger pattern. Main channel doesn't need prefix. Check DB: `npx tsx setup/index.ts --step verify`. Check `logs/lilclaw.log`.
 
-**WhatsApp disconnected:** `npm run auth` then rebuild and restart: `npm run build && launchctl kickstart -k gui/$(id -u)/com.lilclaw` (macOS) or `systemctl --user restart lilclaw` (Linux).
+**WhatsApp disconnected:** `npm run auth` then rebuild and restart: `npm run build && systemctl --user restart lilclaw`.
 
 **Unload service:** macOS: `launchctl unload ~/Library/LaunchAgents/com.lilclaw.plist` | Linux: `systemctl --user stop lilclaw`

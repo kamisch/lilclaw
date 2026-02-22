@@ -23,19 +23,12 @@ detect_platform() {
     *)       PLATFORM="unknown" ;;
   esac
 
-  IS_WSL="false"
-  if [ "$PLATFORM" = "linux" ] && [ -f /proc/version ]; then
-    if grep -qi 'microsoft\|wsl' /proc/version 2>/dev/null; then
-      IS_WSL="true"
-    fi
-  fi
-
   IS_ROOT="false"
   if [ "$(id -u)" -eq 0 ]; then
     IS_ROOT="true"
   fi
 
-  log "Platform: $PLATFORM, WSL: $IS_WSL, Root: $IS_ROOT"
+  log "Platform: $PLATFORM, Root: $IS_ROOT"
 }
 
 # --- Node.js check ---
@@ -138,7 +131,6 @@ fi
 cat <<EOF
 === LILCLAW SETUP: BOOTSTRAP ===
 PLATFORM: $PLATFORM
-IS_WSL: $IS_WSL
 IS_ROOT: $IS_ROOT
 NODE_VERSION: $NODE_VERSION
 NODE_OK: $NODE_OK

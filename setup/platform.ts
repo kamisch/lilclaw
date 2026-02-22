@@ -15,16 +15,6 @@ export function getPlatform(): Platform {
   return 'unknown';
 }
 
-export function isWSL(): boolean {
-  if (os.platform() !== 'linux') return false;
-  try {
-    const release = fs.readFileSync('/proc/version', 'utf-8').toLowerCase();
-    return release.includes('microsoft') || release.includes('wsl');
-  } catch {
-    return false;
-  }
-}
-
 export function isRoot(): boolean {
   return process.getuid?.() === 0;
 }
@@ -61,23 +51,9 @@ export function openBrowser(url: string): boolean {
       return true;
     }
     if (platform === 'linux') {
-      // Try xdg-open first, then wslview for WSL
       if (commandExists('xdg-open')) {
         execSync(`xdg-open ${JSON.stringify(url)}`, { stdio: 'ignore' });
         return true;
-      }
-      if (isWSL() && commandExists('wslview')) {
-        execSync(`wslview ${JSON.stringify(url)}`, { stdio: 'ignore' });
-        return true;
-      }
-      // WSL without wslview: try cmd.exe
-      if (isWSL()) {
-        try {
-          execSync(`cmd.exe /c start "" ${JSON.stringify(url)}`, { stdio: 'ignore' });
-          return true;
-        } catch {
-          // cmd.exe not available
-        }
       }
     }
   } catch {

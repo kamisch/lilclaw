@@ -16,7 +16,6 @@ import {
   getServiceManager,
   hasSystemd,
   isRoot,
-  isWSL,
 } from './platform.js';
 import { emitStatus } from './status.js';
 
@@ -139,7 +138,6 @@ function setupLinux(projectRoot: string, nodePath: string, homeDir: string): voi
   if (serviceManager === 'systemd') {
     setupSystemd(projectRoot, nodePath, homeDir);
   } else {
-    // WSL without systemd or other Linux without systemd
     setupNohupFallback(projectRoot, nodePath, homeDir);
   }
 }
@@ -165,7 +163,7 @@ function killOrphanedProcesses(projectRoot: string): void {
  * daemon (user@UID.service) keeps the old group list from login time.
  * Docker works in the terminal but not in the service context.
  *
- * Only relevant on Linux with user-level systemd (not root, not macOS, not WSL nohup).
+ * Only relevant on Linux with user-level systemd (not root).
  */
 function checkDockerGroupStale(): boolean {
   try {
@@ -283,7 +281,7 @@ WantedBy=${runningAsRoot ? 'multi-user.target' : 'default.target'}`;
   });
 }
 
-function setupNohupFallback(projectRoot: string, nodePath: string, homeDir: string): void {
+function setupNohupFallback(projectRoot: string, nodePath: string, _homeDir: string): void {
   logger.warn('No systemd detected — generating nohup wrapper script');
 
   const wrapperPath = path.join(projectRoot, 'start-lilclaw.sh');
@@ -328,7 +326,7 @@ function setupNohupFallback(projectRoot: string, nodePath: string, homeDir: stri
     PROJECT_PATH: projectRoot,
     WRAPPER_PATH: wrapperPath,
     SERVICE_LOADED: false,
-    FALLBACK: 'wsl_no_systemd',
+    FALLBACK: 'no_systemd',
     STATUS: 'success',
     LOG: 'logs/setup.log',
   });

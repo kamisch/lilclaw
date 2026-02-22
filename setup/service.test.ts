@@ -113,7 +113,7 @@ describe('systemd unit generation', () => {
   });
 });
 
-describe('WSL nohup fallback', () => {
+describe('nohup fallback', () => {
   it('generates a valid wrapper script', () => {
     const projectRoot = '/home/user/lilclaw';
     const nodePath = '/usr/bin/node';
